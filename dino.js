@@ -13,10 +13,10 @@ let dinoY = boardHeight - dinoHeight;
 let dinoImg;
 
 let dino = {
-    x : dinoX,
-    y : dinoY,
-    width : dinoWidth,
-    height : dinoHeight
+    x: dinoX,
+    y: dinoY,
+    width: dinoWidth,
+    height: dinoHeight
 }
 
 //cactus
@@ -42,7 +42,7 @@ let gravity = .4;
 let gameOver = false;
 let score = 0;
 
-window.onload = function() {
+window.onload = function () {
     board = document.getElementById("board");
     board.height = boardHeight;
     board.width = boardWidth;
@@ -55,7 +55,7 @@ window.onload = function() {
 
     dinoImg = new Image();
     dinoImg.src = "./img/dino.png";
-    dinoImg.onload = function() {
+    dinoImg.onload = function () {
         context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
     }
 
@@ -70,9 +70,10 @@ window.onload = function() {
 
     requestAnimationFrame(update);
     setInterval(placeCactus, 1000); //1000 milliseconds = 1 second
-    document.addEventListener("keydown", moveDino);
-}
 
+    // Add event listener for touch events
+    board.addEventListener("touchstart", moveDino);
+}
 function update() {
     requestAnimationFrame(update);
     if (gameOver) {
@@ -94,15 +95,15 @@ function update() {
         if (detectCollision(dino, cactus)) {
             gameOver = true;
             dinoImg.src = "./img/dino-dead.png";
-            dinoImg.onload = function() {
+            dinoImg.onload = function () {
                 context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
             }
         }
     }
 
     //score
-    context.fillStyle="black";
-    context.font="20px courier";
+    context.fillStyle = "black";
+    context.font = "20px courier";
     score++;
     context.fillText(score, 5, 20);
 }
@@ -112,14 +113,13 @@ function moveDino(e) {
         return;
     }
 
-    if ((e.code == "Space" || e.code == "ArrowUp") && dino.y == dinoY) {
-        //jump
+    // Check if the touch event happened within the dino's area
+    if (e.touches[0].clientX >= dino.x && e.touches[0].clientX <= dino.x + dino.width &&
+        e.touches[0].clientY >= dino.y && e.touches[0].clientY <= dino.y + dino.height &&
+        dino.y === dinoY) {
+        // Jump
         velocityY = -10;
     }
-    else if (e.code == "ArrowDown" && dino.y == dinoY) {
-        //duck
-    }
-
 }
 
 function placeCactus() {
@@ -129,10 +129,10 @@ function placeCactus() {
 
     //place cactus
     let cactus = {
-        img : null,
-        x : cactusX,
-        y : cactusY,
-        width : null,
+        img: null,
+        x: cactusX,
+        y: cactusY,
+        width: null,
         height: cactusHeight
     }
 
@@ -161,7 +161,7 @@ function placeCactus() {
 
 function detectCollision(a, b) {
     return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
-           a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
-           a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
-           a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
+        a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
+        a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
+        a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
 }
